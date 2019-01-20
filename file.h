@@ -5,14 +5,13 @@
 #define MAX_FILENAME_SIZE 256
 #define HALF_BUFFER_SIZE 1048576
 
-#define NO_BUMP     0
-#define LEFT_BUMP   1
-#define RIGHT_BUMP  2
-#define TOP_BUMP    3
-#define BOTTOM_BUMP 4
+typedef enum {
+    NO_BUMP, LEFT_BUMP, RIGHT_BUMP, TOP_BUMP, BOTTOM_BUMP
+} bump;
 
-#define NEWLINE_BELOW   0
-#define NEWLINE_ABOVE   1
+typedef enum {
+    NEWLINE_BELOW, NEWLINE_ABOVE
+} newline_location;
 
 typedef struct {
     unsigned int *left;
@@ -37,9 +36,9 @@ extern void destroy_file_buffer(file_buffer *fb);
 
 /* normal mode quick commands */
 extern void delete_current_line(file_buffer *fb);
-extern void insert_newline(file_buffer *fb, unsigned char location);
+extern void insert_newline(file_buffer *fb, newline_location nl);
 
-extern unsigned char left(file_buffer *fb);
-extern unsigned char right(file_buffer *fb);
-extern unsigned char down(file_buffer *fb);
-extern unsigned char up(file_buffer *fb);
+extern bump left(file_buffer *fb);
+extern bump right(file_buffer *fb);
+extern bump down(file_buffer *fb);
+extern bump up(file_buffer *fb);

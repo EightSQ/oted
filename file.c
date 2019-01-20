@@ -6,8 +6,8 @@
 
 /* static function declarations */
 static unsigned int open_line_length(open_line_buffer *olb);
-static unsigned char buf_left(open_line_buffer *olb);
-static unsigned char buf_right(open_line_buffer *olb);
+static bump buf_left(open_line_buffer *olb);
+static bump buf_right(open_line_buffer *olb);
 static void destroy_open_line(open_line_buffer *olb);
 
 static file_buffer *create_file_buffer(void);
@@ -23,7 +23,7 @@ static unsigned int open_line_length(open_line_buffer *olb)
     return olb->lfront + (HALF_BUFFER_SIZE - olb->rfront);
 }
 
-static unsigned char buf_left(open_line_buffer *olb)
+static bump buf_left(open_line_buffer *olb)
 {
     if(olb->lfront == 0 || olb->rfront == 0)
         /* second boolean part: controlled fail behaviour if right open_file_buffer is full */
@@ -34,7 +34,7 @@ static unsigned char buf_left(open_line_buffer *olb)
     return NO_BUMP;
 }
 
-static unsigned char buf_right(open_line_buffer *olb)
+static bump buf_right(open_line_buffer *olb)
 {
     if(olb->lfront == HALF_BUFFER_SIZE || olb->rfront == HALF_BUFFER_SIZE)
         /* first boolean part: controlled fail behaviour if left open_file_buffer is full */
@@ -150,9 +150,9 @@ extern void write_file(file_buffer *fb)
     fclose(fd);
 }
 
-extern void insert_newline(file_buffer *fb, unsigned char location)
+extern void insert_newline(file_buffer *fb, newline_location nl)
 {
-    switch(location)
+    switch(nl)
     {
         case NEWLINE_ABOVE:
             insert_newline_above(fb);
@@ -164,17 +164,17 @@ extern void insert_newline(file_buffer *fb, unsigned char location)
     }
 }
 
-extern unsigned char left(file_buffer *fb)
+extern bump left(file_buffer *fb)
 {
     return buf_left(fb->open);
 }
 
-extern unsigned char right(file_buffer *fb)
+extern bump right(file_buffer *fb)
 {
     return buf_right(fb->open);
 }
 
-extern unsigned char down(file_buffer *fb)
+extern bump down(file_buffer *fb)
 {
     if(fb->current_line->next == NULL)
         return BOTTOM_BUMP;
@@ -193,7 +193,7 @@ extern unsigned char down(file_buffer *fb)
     return NO_BUMP;
 }
 
-extern unsigned char up(file_buffer *fb)
+extern bump up(file_buffer *fb)
 {
     if(fb->current_line->prev == NULL)
         return TOP_BUMP;
